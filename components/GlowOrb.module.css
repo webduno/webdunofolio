@@ -1,0 +1,147 @@
+.orb {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #fff;
+  font-family: var(--font-lilita), sans-serif;
+  text-align: center;
+  line-height: 1.15;
+  white-space: pre-line;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  user-select: none;
+  cursor: pointer;
+  border: none;
+  padding: 8px;
+}
+
+.floatWrap {
+  animation-name: orbFloat;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.paused {
+  animation-play-state: paused;
+}
+
+@keyframes orbFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floatWrap {
+    animation: none;
+  }
+}
+
+.orb:hover {
+  opacity: 0.82;
+  transform: scale(1.06);
+}
+
+.orb:active {
+  transform: scale(0.97);
+}
+
+.orange {
+  background: linear-gradient(145deg, #fbe471, #f5920e, #a5420e);
+  box-shadow:
+    0 0 25px #ff9900aa,
+    inset -5px -5px 12px 5px #352207aa,
+    -5px -5px 15px #00000066;
+  text-shadow:
+    -2px -2px 0 #442200,
+    2px -2px 0 #442200,
+    -2px 2px 0 #442200,
+    2px 2px 0 #442200;
+}
+
+.green {
+  background: linear-gradient(145deg, #71fb71, #0ef50e, #0ea50e);
+  box-shadow:
+    0 0 25px #00ff00aa,
+    inset -5px -5px 12px 5px #352207aa,
+    -5px -5px 15px #00000066;
+  text-shadow:
+    -2px -2px 0 #004400,
+    2px -2px 0 #004400,
+    -2px 2px 0 #004400,
+    2px 2px 0 #004400;
+}
+
+.blue {
+  background: linear-gradient(145deg, #71e4fb, #0e92f5, #0e42a5);
+  box-shadow:
+    0 0 25px #0099ffaa,
+    inset -5px -5px 12px 5px #352207aa,
+    -5px -5px 15px #00000066;
+  text-shadow:
+    -2px -2px 0 #002244,
+    2px -2px 0 #002244,
+    -2px 2px 0 #002244,
+    2px 2px 0 #002244;
+}
+
+.lg {
+  width: 108px;
+  height: 108px;
+  font-size: 1.05rem;
+}
+
+.md {
+  width: 90px;
+  height: 90px;
+  font-size: 0.88rem;
+}
+
+.sm {
+  width: 76px;
+  height: 76px;
+  font-size: 0.78rem;
+}
+
+.icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.icons svg {
+  width: 22px;
+  height: 22px;
+  fill: #fff;
+}
+
+@media (min-width: 900px) {
+  .lg {
+    width: 128px;
+    height: 128px;
+    font-size: 1.2rem;
+  }
+
+  .md {
+    width: 104px;
+    height: 104px;
+    font-size: 1rem;
+  }
+
+  .sm {
+    width: 88px;
+    height: 88px;
+    font-size: 0.88rem;
+  }
+
+  .icons svg {
+    width: 26px;
+    height: 26px;
+  }
+}

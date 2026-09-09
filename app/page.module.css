@@ -1,0 +1,257 @@
+.page {
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  background: linear-gradient(-45deg, #000, #0a1117, #373026);
+}
+
+.hero {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+.scene {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.name {
+  position: absolute;
+  top: 6%;
+  right: 4%;
+  z-index: 3;
+  text-align: right;
+  color: #fff;
+  font-family: var(--font-lilita), sans-serif;
+  line-height: 0.9;
+  pointer-events: none;
+}
+
+.first {
+  font-size: 1.2rem;
+  letter-spacing: 0.04em;
+}
+
+.last {
+  font-size: 2.6rem;
+}
+
+.glow {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #b8a898, #2a5976);
+  filter: blur(50px);
+  top: 30%;
+  z-index: 0;
+}
+
+.islandStage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+.island {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: lighten;
+  transition: opacity 0.45s ease;
+}
+
+.islandHidden {
+  opacity: 0;
+}
+
+.islandCanvas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.islandCanvas :global(div),
+.islandCanvas :global(canvas) {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.islandCanvasReady {
+  opacity: 1;
+}
+
+.start {
+  position: absolute;
+  top: 12%;
+  left: 15%;
+  z-index: 5;
+}
+
+.projects {
+  position: absolute;
+  bottom: 32%;
+  left: 5%;
+  z-index: 5;
+}
+
+.contact {
+  position: absolute;
+  bottom: 20%;
+  right:26%;
+  z-index: 5;
+}
+
+@media (min-width: 1080px) {
+  .start {
+    top: 14% !important;
+    left: 33% !important;
+  }
+  .contact {
+    right: 33% !important;
+  }
+  .projects {
+    left: 25% !important;
+  }
+}
+
+.portfolio {
+  position: relative;
+  z-index: 4;
+  width: 100%;
+  flex-shrink: 0;
+  margin-top: 0;
+  padding: 14px 12px;
+  text-align: center;
+  color: #fff;
+  font-family: var(--font-raleway), sans-serif;
+  font-weight: 100;
+  font-size: 1.4rem;
+  letter-spacing: 0.08em;
+  background: #ffffff22;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none;
+  cursor: pointer;
+  border-radius: 50px 50px 0 0;
+}
+
+.portfolio:hover {
+  background: #ffffff33;
+}
+
+.sparkle {
+  position: absolute;
+  right: 18px;
+  bottom: 10px;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  clip-path: polygon(50% 0, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0 50%, 35% 35%);
+}
+
+.expandBlocker {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+}
+
+.expandOrb {
+  position: fixed;
+  z-index: 9999;
+  border-radius: 50%;
+  pointer-events: none;
+  background: #000;
+  transform: scale(1);
+  transform-origin: center center;
+  transition: transform 0.47s cubic-bezier(0.33, 0, 0.15, 1);
+  will-change: transform;
+}
+
+.expandOrbColor {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  opacity: 1;
+  transition: opacity 0.47s ease-in;
+}
+
+.expandOrbGrown {
+  transform: scale(var(--orb-scale));
+}
+
+.expandOrbGrown .expandOrbColor {
+  opacity: 0;
+}
+
+@media (min-width: 900px) {
+  .page {
+    padding: 0;
+  }
+
+  .name {
+    top: 8%;
+    right: 4%;
+  }
+
+  .first {
+    font-size: 1.6rem;
+  }
+
+  .last {
+    font-size: 3.6rem;
+  }
+
+  .scene {
+    width: 100%;
+  }
+
+  .glow {
+    width: 320px;
+    height: 320px;
+  }
+
+  .start {
+    top: 4%;
+    left: 8%;
+  }
+
+  .projects {
+    bottom: 22%;
+    left: 8%;
+  }
+
+  .contact {
+    bottom: 18%;
+    right: 18%;
+  }
+
+  .portfolio {
+    font-size: 1.7rem;
+    max-width: 420px;
+  }
+}

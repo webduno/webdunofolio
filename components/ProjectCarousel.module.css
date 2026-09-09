@@ -1,0 +1,145 @@
+.wrap {
+  width: 100%;
+}
+
+.track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 12px 12% 28px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.card {
+  flex: 0 0 74%;
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 14px 14px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #1a1a1acc, #0d0d0ddd);
+  border: 1px solid #ffffff22;
+  backdrop-filter: blur(6px);
+}
+
+.green {
+  box-shadow: 0 0 18px #22ff6688, 0 8px 24px #00000088;
+  border-color: #66ff99aa;
+}
+
+.orange {
+  box-shadow: 0 0 18px #ff9900aa, 0 8px 24px #00000088;
+  border-color: #ffbb55aa;
+}
+
+.blue {
+  box-shadow: 0 0 18px #33aaffaa, 0 8px 24px #00000088;
+  border-color: #66ccffaa;
+}
+
+.title {
+  font-family: var(--font-lilita), sans-serif;
+  font-size: 1.15rem;
+  color: #fff;
+}
+
+.stack {
+  font-family: var(--font-raleway), sans-serif;
+  font-size: 0.78rem;
+  color: #d8d8d8;
+  margin-top: -4px;
+}
+
+.thumb {
+  position: relative;
+  width: 100%;
+  height: 110px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #111;
+}
+
+.thumb img {
+  object-fit: contain;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.source {
+  font-family: var(--font-raleway), sans-serif;
+  font-size: 0.78rem;
+  color: #fff;
+  opacity: 0.85;
+}
+
+.source:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.view {
+  font-family: var(--font-lilita), sans-serif;
+  font-size: 0.78rem;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.viewGreen {
+  background: linear-gradient(145deg, #71fb71, #0ea50e);
+  box-shadow: 0 0 10px #00ff0088;
+}
+
+.viewOrange {
+  background: linear-gradient(145deg, #fbe471, #f5920e);
+  box-shadow: 0 0 10px #ff990088;
+}
+
+.viewBlue {
+  background: linear-gradient(145deg, #71e4fb, #0e92f5);
+  box-shadow: 0 0 10px #0099ff88;
+}
+
+.empty {
+  text-align: center;
+  color: #fff;
+  padding: 40px 16px;
+  font-family: var(--font-raleway), sans-serif;
+}
+
+@media (min-width: 900px) {
+  .track {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: visible;
+    padding: 8px 0 16px;
+    gap: 24px;
+  }
+
+  .card {
+    flex: unset;
+  }
+
+  .thumb {
+    height: 160px;
+  }
+
+  .title {
+    font-size: 1.35rem;
+  }
+}

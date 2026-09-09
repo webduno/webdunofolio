@@ -1,0 +1,92 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 5000;
+  width: 100vw;
+  height: 100dvh;
+  overflow: auto;
+  background: rgba(255, 255, 255, 0.88);
+  color: #111;
+  font-family: var(--font-raleway), sans-serif;
+}
+
+.content {
+  width: min(440px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 56px 0 64px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 36px;
+}
+
+.title {
+  font-family: var(--font-lilita), sans-serif;
+  font-size: 2rem;
+  letter-spacing: 0.04em;
+  color: #111;
+}
+
+.close {
+  border: none;
+  background: transparent;
+  color: #222;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.close:hover {
+  opacity: 0.55;
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.name {
+  color: #111;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.name:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.stack {
+  font-size: 0.9rem;
+  color: #555;
+  font-weight: 400;
+}
+
+.source {
+  font-size: 0.82rem;
+  color: #777;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  width: fit-content;
+}
+
+.source:hover {
+  color: #111;
+}
