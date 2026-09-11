@@ -5,8 +5,8 @@
   border-radius: 16px;
   background: rgba(18, 18, 18, 0.42);
   border: 1px solid rgba(255, 255, 255, 0.45);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   flex-direction: column;
   gap: 12px;

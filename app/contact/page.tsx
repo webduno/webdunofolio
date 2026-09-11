@@ -44,7 +44,7 @@ export default function ContactPage() {
 
       <section className={styles.stage}>
         <Image
-          src="/images/mainisland.png"
+          src="/images/mainislanddark.png"
           alt="Floating island"
           width={500}
           height={500}

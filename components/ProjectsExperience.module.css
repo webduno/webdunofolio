@@ -21,10 +21,11 @@
   bottom: 0;
   transform: translateX(-50%);
   width: min(420px, 120%);
-  opacity: 0.9;
+  /* opacity: 0.15; */
   pointer-events: none;
   z-index: 0;
   mix-blend-mode: lighten;
+  filter: blur(8px);
 }
 
 .filterBtn {

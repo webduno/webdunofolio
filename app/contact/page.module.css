@@ -29,6 +29,11 @@
   z-index: 0;
   pointer-events: none;
   mix-blend-mode: lighten;
+  /* blur */
+  filter: blur(8px);
+  -webkit-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .formWrap {

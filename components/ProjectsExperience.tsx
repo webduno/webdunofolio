@@ -74,7 +74,7 @@ export default function ProjectsExperience() {
       </div>
 
       <Image
-        src="/images/mainisland.png"
+        src="/images/mainislanddark.png"
         alt=""
         width={500}
         height={500}
