@@ -43,18 +43,19 @@ export default function ContactPage() {
       />
 
       <section className={styles.stage}>
-        <Image
-          src="/images/mainislanddark.png"
-          alt="Floating island"
-          width={500}
-          height={500}
-          className={styles.island}
-          priority
-        />
         <div className={styles.formWrap}>
           <ContactForm />
         </div>
       </section>
+
+      <Image
+        src="/images/mainislanddark.png"
+        alt=""
+        width={500}
+        height={500}
+        className={styles.island}
+        priority
+      />
     </main>
   );
 }
