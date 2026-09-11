@@ -58,10 +58,10 @@
     inset -5px -5px 12px 5px #352207aa,
     -5px -5px 15px #00000066;
   text-shadow:
-    -2px -2px 0 #442200,
-    2px -2px 0 #442200,
-    -2px 2px 0 #442200,
-    2px 2px 0 #442200;
+    -1px -1px 0 #442200,
+    1px -1px 0 #442200,
+    -1px 1px 0 #442200,
+    1px 1px 0 #442200;
 }
 
 .green {
@@ -71,10 +71,10 @@
     inset -5px -5px 12px 5px #352207aa,
     -5px -5px 15px #00000066;
   text-shadow:
-    -2px -2px 0 #004400,
-    2px -2px 0 #004400,
-    -2px 2px 0 #004400,
-    2px 2px 0 #004400;
+    -1px -1px 0 #004400,
+    1px -1px 0 #004400,
+    -1px 1px 0 #004400,
+    1px 1px 0 #004400;
 }
 
 .blue {
@@ -84,10 +84,10 @@
     inset -5px -5px 12px 5px #352207aa,
     -5px -5px 15px #00000066;
   text-shadow:
-    -2px -2px 0 #002244,
-    2px -2px 0 #002244,
-    -2px 2px 0 #002244,
-    2px 2px 0 #002244;
+    -1px -1px 0 #002244,
+    1px -1px 0 #002244,
+    -1px 1px 0 #002244,
+    1px 1px 0 #002244;
 }
 
 .lg {
@@ -129,15 +129,15 @@
   }
 
   .md {
-    width: 104px;
-    height: 104px;
+    width: 85px;
+    height: 85px;
     font-size: 1rem;
   }
 
   .sm {
-    width: 88px;
-    height: 88px;
-    font-size: 0.88rem;
+    width: 95px;
+    height: 95px;
+    font-size: 1.2rem;
   }
 
   .icons svg {

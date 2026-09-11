@@ -78,7 +78,9 @@
   height: 100%;
   object-fit: contain;
   mix-blend-mode: lighten;
+  filter: blur(4px);
   transition: opacity 0.45s ease;
+  /* opacity: 0.7; */
 }
 
 .islandHidden {
@@ -89,7 +91,7 @@
   position: absolute;
   inset: 0;
   z-index: 2;
-  pointer-events: none;
+  pointer-events: auto;
   opacity: 0;
   transition: opacity 0.45s ease;
 }
@@ -108,7 +110,7 @@
 .start {
   position: absolute;
   top: 12%;
-  left: 15%;
+  left: 25%;
   z-index: 5;
 }
 
@@ -122,7 +124,7 @@
 .contact {
   position: absolute;
   bottom: 20%;
-  right:26%;
+  right:12%;
   z-index: 5;
 }
 
@@ -158,6 +160,8 @@
   border: none;
   cursor: pointer;
   border-radius: 50px 50px 0 0;
+  font-weight: 800;
+  text-shadow: 0 0 10px #aa7755, 2px 2px 2px #000000;
 }
 
 .portfolio:hover {
