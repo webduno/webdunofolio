@@ -544,7 +544,7 @@ export default function GameCanvas(props: GameCanvasProps) {
   return (
     <Canvas
       shadows="basic"
-      camera={{ position: [0.55, START_Y + 0.72, RIM + 2.45], fov: 95, near: 0.1, far: 80 }}
+      camera={{ position: [0.55, START_Y + 0.72, RIM + 2.45], fov: 110, near: 0.1, far: 80 }}
       gl={{ alpha: true, antialias: true }}
       dpr={[1, 1.75]}
       style={{ touchAction: "none" }}
