@@ -316,6 +316,8 @@ function GameWorld({
     if (clip) {
       const action = mixer.clipAction(clip);
       action.play();
+      // hold the clip's first frame so the bird keeps its authored pose
+      action.paused = true;
     }
     mixerRef.current = mixer;
 
