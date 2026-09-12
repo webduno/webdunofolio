@@ -34,6 +34,7 @@ const MAX_HEIGHT = 3.7;
 const SEED_COUNT = 4;
 const COLLECT_RADIUS = 0.5;
 const BIRD_HEIGHT = 0.52;
+const SPECIAL_SEED_CHANCE = 0.04;
 
 type Status = "ready" | "playing" | "dead";
 
@@ -43,12 +44,14 @@ type GameCanvasProps = {
   sessionId: number;
   onScore: (score: number) => void;
   onDead: () => void;
+  onSpecial: () => void;
 };
 
 type Seed = {
   mesh: THREE.Mesh;
   angle: number;
   height: number;
+  special: boolean;
 };
 
 function enableShadows(object: THREE.Object3D) {
@@ -146,10 +149,18 @@ function colorClone(source: THREE.Group, material: THREE.Material) {
   return clone;
 }
 
-function placeSeed(seed: Seed, islandRot: number, slot = Math.random() * 4) {
+function placeSeed(
+  seed: Seed,
+  islandRot: number,
+  gold: THREE.Material,
+  green: THREE.Material,
+  slot = Math.random() * 4,
+) {
   const worldAngle = 0.6 + slot * 0.62 + Math.random() * 0.12;
   seed.angle = worldAngle - islandRot;
   seed.height = 1.1 + Math.random() * 1.7;
+  seed.special = Math.random() < SPECIAL_SEED_CHANCE;
+  seed.mesh.material = seed.special ? green : gold;
   seed.mesh.position.set(
     Math.sin(seed.angle) * RIM,
     seed.height,
@@ -164,6 +175,7 @@ function GameWorld({
   sessionId,
   onScore,
   onDead,
+  onSpecial,
 }: GameCanvasProps) {
   const islandRef = useRef<THREE.Group>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
@@ -328,21 +340,28 @@ function GameWorld({
   const seedField = useMemo(() => {
     const group = new THREE.Group();
     const geometry = new THREE.SphereGeometry(0.12, 12, 12);
-    const material = new THREE.MeshStandardMaterial({
+    const gold = new THREE.MeshStandardMaterial({
       color: 0xf0c14a,
       emissive: 0xc47a12,
       emissiveIntensity: 0.55,
       roughness: 0.45,
       metalness: 0.12,
     });
+    const green = new THREE.MeshStandardMaterial({
+      color: 0x3ddc84,
+      emissive: 0x148f4a,
+      emissiveIntensity: 0.7,
+      roughness: 0.4,
+      metalness: 0.12,
+    });
     const seeds: Seed[] = Array.from({ length: SEED_COUNT }, () => {
-      const mesh = new THREE.Mesh(geometry, material);
+      const mesh = new THREE.Mesh(geometry, gold);
       mesh.castShadow = true;
       mesh.visible = false;
       group.add(mesh);
-      return { mesh, angle: 0, height: 1 };
+      return { mesh, angle: 0, height: 1, special: false };
     });
-    return { group, seeds };
+    return { group, seeds, gold, green };
   }, []);
 
   useEffect(() => {
@@ -393,7 +412,7 @@ function GameWorld({
     if (playing && !seededRef.current) {
       seededRef.current = true;
       seedField.seeds.forEach((seed, index) =>
-        placeSeed(seed, island.rotation.y, index),
+        placeSeed(seed, island.rotation.y, seedField.gold, seedField.green, index),
       );
     }
 
@@ -429,7 +448,7 @@ function GameWorld({
 
     birdWorld.set(0, physics.current.y + BIRD_HEIGHT * 0.35, RIM);
     raycaster.set(new THREE.Vector3(0, physics.current.y + 1.6, RIM), down);
-    const hits = raycaster.intersectObject(island, true);
+    const hits = raycaster.intersectObjects(islandParts, true);
     const floorHit = hits.find((hit) => hit.point.y > -0.6);
     const floorY = floorHit ? floorHit.point.y : 0.12;
     if (physics.current.y <= floorY + 0.04) {
@@ -449,13 +468,28 @@ function GameWorld({
         seed.mesh.visible = false;
         physics.current.score += 1;
         onScore(physics.current.score);
-        placeSeed(seed, rot, 3.4 + Math.random() * 0.6);
+        if (seed.special) {
+          onSpecial();
+        }
+        placeSeed(
+          seed,
+          rot,
+          seedField.gold,
+          seedField.green,
+          3.4 + Math.random() * 0.6,
+        );
         return;
       }
 
       const worldAngle = Math.atan2(seedWorld.x, seedWorld.z);
       if (worldAngle < -0.55) {
-        placeSeed(seed, rot, 3.2 + Math.random() * 0.8);
+        placeSeed(
+          seed,
+          rot,
+          seedField.gold,
+          seedField.green,
+          3.2 + Math.random() * 0.8,
+        );
       }
     });
   });

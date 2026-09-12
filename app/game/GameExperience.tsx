@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import JSConfetti from "js-confetti";
 import styles from "./page.module.css";
 
 const GameCanvas = dynamic(() => import("./GameCanvas"), { ssr: false });
@@ -15,6 +16,9 @@ export default function GameExperience() {
   const [best, setBest] = useState(0);
   const [flapId, setFlapId] = useState(0);
   const [sessionId, setSessionId] = useState(0);
+  const [retryLocked, setRetryLocked] = useState(false);
+  const confettiCanvasRef = useRef<HTMLCanvasElement>(null);
+  const confettiRef = useRef<JSConfetti | null>(null);
 
   useEffect(() => {
     const html = document.documentElement;
@@ -49,13 +53,58 @@ export default function GameExperience() {
   const statusRef = useRef(status);
   statusRef.current = status;
 
+  useEffect(() => {
+    const canvas = confettiCanvasRef.current;
+    if (!canvas) {
+      return;
+    }
+
+    const confetti = new JSConfetti({ canvas });
+    confettiRef.current = confetti;
+    return () => {
+      confetti.clearCanvas();
+      confettiRef.current = null;
+    };
+  }, []);
+
   const handleDead = useCallback(() => {
     setStatus("dead");
+    setRetryLocked(true);
   }, []);
+
+  const handleSpecial = useCallback(() => {
+    confettiRef.current?.addConfetti({
+      confettiColors: [
+        "#3ddc84",
+        "#f0c14a",
+        "#ff6b6b",
+        "#ffe066",
+        "#74c0fc",
+        "#ffffff",
+      ],
+      confettiNumber: 120,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (status !== "dead" || !retryLocked) {
+      return;
+    }
+
+    const id = window.setTimeout(() => {
+      setRetryLocked(false);
+    }, 3000);
+
+    return () => window.clearTimeout(id);
+  }, [retryLocked, status]);
 
   const flap = useCallback(() => {
     const current = statusRef.current;
     if (current === "dead") {
+      if (retryLocked) {
+        return;
+      }
+
       setScore(0);
       setSessionId((value) => value + 1);
       setFlapId((value) => value + 1);
@@ -68,7 +117,7 @@ export default function GameExperience() {
     }
 
     setFlapId((value) => value + 1);
-  }, []);
+  }, [retryLocked]);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -102,6 +151,9 @@ export default function GameExperience() {
         className={styles.stage}
         onPointerDown={(event) => {
           event.preventDefault();
+          if (status === "dead") {
+            return;
+          }
           flap();
         }}
       >
@@ -112,6 +164,7 @@ export default function GameExperience() {
             sessionId={sessionId}
             onScore={setScore}
             onDead={handleDead}
+            onSpecial={handleSpecial}
           />
         </div>
 
@@ -119,27 +172,42 @@ export default function GameExperience() {
           <div className={styles.score}>{score}</div>
         ) : null}
 
-        {status !== "playing" ? (
+        {status === "ready" ? (
           <div className={styles.overlay}>
-            <div className={styles.overlayTitle}>
-              {status === "dead" ? "Game Over" : ""}
-            </div>
+            <div className={styles.overlayTitle} />
             <div className={styles.overlayBottom}>
-              {status === "dead" ? (
-                <div className={styles.overlayHint}>Seeds {score}</div>
-              ) : (
-                <div className={styles.overlayHint}>
-                  Tap to flap. Stay off the island and grab the seeds.
-                </div>
-              )}
-              <div className={styles.best}>Best {best}</div>
               <div className={styles.overlayHint}>
-                {status === "dead" ? "Tap to retry" : "Tap or press space"}
+                Tap to flap. Stay off the island and grab the seeds.
               </div>
+              <div className={styles.best}>Best {best}</div>
+              <div className={styles.overlayHint}>Tap or press space</div>
+            </div>
+          </div>
+        ) : null}
+
+        {status === "dead" ? (
+          <div className={`${styles.overlay} ${styles.overlayDead}`}>
+            <div className={styles.overCard}>
+              <div className={styles.overlayTitle}>Game Over</div>
+              <div className={styles.overScore}>{score}</div>
+              <div className={styles.overScoreLabel}>Seeds</div>
+              <div className={styles.best}>Best {best}</div>
+              <button
+                type="button"
+                className={styles.playAgain}
+                disabled={retryLocked}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  flap();
+                }}
+              >
+                Play Again
+              </button>
             </div>
           </div>
         ) : null}
       </div>
+      <canvas ref={confettiCanvasRef} className={styles.confetti} />
     </div>
   );
 }
