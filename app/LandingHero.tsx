@@ -157,14 +157,7 @@ export default function LandingHero() {
           floatDelay={-0.2}
           floatDuration={3.4}
           floatPaused={Boolean(expanding)}
-          onClick={(event) =>
-            startExpand(
-              event,
-              "https://margaritar.vercel.app/beach",
-              "orange",
-              true,
-            )
-          }
+          onClick={(event) => startExpand(event, "/game", "orange")}
         />
         <GlowOrb
           color="green"
