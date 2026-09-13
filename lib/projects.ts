@@ -13,6 +13,7 @@ export type Project = {
 };
 
 export const PROJECTS: Project[] = [
+  // 3d open world game
   {
     id: "openworld",
     title: "3D Open World",
@@ -23,6 +24,7 @@ export const PROJECTS: Project[] = [
     source: "https://github.com/webduno",
     live: "https://webduno.com/opet/test",
   },
+  // study taxi app
   {
     id: "study",
     title: "Study Taxi",
@@ -33,6 +35,7 @@ export const PROJECTS: Project[] = [
     source: "https://github.com/webduno",
     live: "https://studytaxi.vercel.app",
   },
+  // wtrade app
   {
     id: "wtrade",
     title: "WTrade",
@@ -43,6 +46,7 @@ export const PROJECTS: Project[] = [
     source: "https://github.com/webduno",
     live: "https://wtrade.vercel.app",
   },
+  // tech landing page
   {
     id: "tech-landing",
     title: "Tech Landing",
@@ -53,6 +57,7 @@ export const PROJECTS: Project[] = [
     source: "https://github.com/webduno",
     live: "https://irecovery.vercel.app/",
   },
+  // structure builder app
   {
     id: "structurebuilder",
     title: "3D Structure Builder",
@@ -63,6 +68,7 @@ export const PROJECTS: Project[] = [
     source: "https://github.com/webduno",
     live: "https://duno.vercel.app/builder",
   },
+  // marina run game
   {
     id: "marina",
     title: "Marina Run",
@@ -73,6 +79,7 @@ export const PROJECTS: Project[] = [
     source: "https://github.com/webduno",
     live: "https://margaritar.vercel.app/",
   },
+  // body maker app
   {
     id: "bodymaker",
     title: "BodyMaker",
@@ -83,6 +90,7 @@ export const PROJECTS: Project[] = [
     source: "https://github.com/webduno",
     live: "https://mylady.vercel.app/",
   },
+  // remove view app
   {
     id: "remoview",
     title: "Remove Viewing Training Tool",
@@ -93,6 +101,7 @@ export const PROJECTS: Project[] = [
     source: "https://github.com/webduno",
     live: "https://removeview.vercel.app/",
   },
+  // ggshot game
   {
     id: "ggshot",
     title: "GGShot",
@@ -102,5 +111,16 @@ export const PROJECTS: Project[] = [
     image: "/images/ggshot.png",
     source: "https://github.com/webduno",
     live: "https://ggshot.vercel.app/",
+  },
+  // bus tracker app
+  {
+    id: "bus-tracker",
+    title: "Bus Tracker",
+    stack: "Next.js, React",
+    glow: "blue",
+    category: "apps",
+    image: "/images/epabus.png",
+    source: "https://github.com/webduno",
+    live: "https://epabus.vercel.app/",
   },
 ];
