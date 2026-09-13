@@ -8,7 +8,7 @@ function SocialIcons() {
   return (
     <span className={styles.social}>
       <a
-        href="https://www.linkedin.com"
+        href="https://www.linkedin.com/in/abraham-duno/"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="LinkedIn"
@@ -36,9 +36,9 @@ export default function ContactPage() {
     <main className={styles.page}>
       <Header />
       <PageTitleBar
-        title="LET'S BUILD"
+        title="CONTACTO"
         backHref="/"
-        backLabel="Back to home"
+        backLabel="Volver"
         right={<SocialIcons />}
       />
 

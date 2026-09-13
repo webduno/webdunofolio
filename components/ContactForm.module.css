@@ -47,10 +47,10 @@
   background: linear-gradient(145deg, #71e4fb, #0e92f5, #0e42a5);
   box-shadow: 0 0 18px #0099ffaa;
   text-shadow:
-    -2px -2px 0 #002244,
-    2px -2px 0 #002244,
-    -2px 2px 0 #002244,
-    2px 2px 0 #002244;
+    -1px -1px 0 #002244,
+    1px -1px 0 #002244,
+    -1px 1px 0 #002244,
+    1px 1px 0 #002244;
 }
 
 .submit:hover {

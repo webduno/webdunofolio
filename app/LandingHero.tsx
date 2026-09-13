@@ -152,7 +152,7 @@ export default function LandingHero() {
         <GlowOrb
           color="orange"
           size="lg"
-          label={"Start\nGame"}
+          label={"Entrar al Juego"}
           className={styles.start}
           floatDelay={-0.2}
           floatDuration={3.4}
@@ -162,7 +162,7 @@ export default function LandingHero() {
         <GlowOrb
           color="green"
           size="md"
-          label="Projects"
+          label="Projectos"
           className={styles.projects}
           floatDelay={-1.5}
           floatDuration={4.1}
@@ -172,7 +172,7 @@ export default function LandingHero() {
         <GlowOrb
           color="blue"
           size="sm"
-          label="Contact"
+          label="Contacto"
           className={styles.contact}
           floatDelay={-2.7}
           floatDuration={3.7}
@@ -185,7 +185,7 @@ export default function LandingHero() {
           className={styles.portfolio}
           onClick={() => setPortfolioOpen(true)}
         >
-          Portfolio
+          Portafolio
           {/* <span className={styles.sparkle} aria-hidden="true" /> */}
         </button>
       </div>

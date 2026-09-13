@@ -28,7 +28,7 @@ export default function ProjectsExperience() {
       <span className={`${styles.spark} ${styles.spark3}`} />
 
       <PageTitleBar
-        title="PROJECTS"
+        title="PROJECTOS"
         backHref="/"
         backLabel="Back to home"
         right={
@@ -38,7 +38,7 @@ export default function ProjectsExperience() {
               onClick={() => setShowFilters((open) => !open)}
               type="button"
             >
-              Filters
+              Filtros
             </button>
             {showFilters ? (
               <div className={styles.panel}>
@@ -47,14 +47,14 @@ export default function ProjectsExperience() {
                   onClick={() => setFilter("all")}
                   type="button"
                 >
-                  All
+                  Todos
                 </button>
                 <button
                   className={`${styles.chip} ${filter === "games" ? styles.chipActive : ""}`}
                   onClick={() => setFilter("games")}
                   type="button"
                 >
-                  Games
+                  Juegos
                 </button>
                 <button
                   className={`${styles.chip} ${filter === "apps" ? styles.chipActive : ""}`}

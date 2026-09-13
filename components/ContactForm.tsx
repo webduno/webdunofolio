@@ -54,14 +54,14 @@ export default function ContactForm() {
   if (sent) {
     return (
       <p className={styles.thanks}>
-        Message sent. Thanks for reaching out — I&apos;ll get back to you soon.
+        Mensaje enviado. Gracias por contactarme — me pondré en contacto contigo pronto.
       </p>
     );
   }
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
-      <input className={styles.field} name="name" placeholder="Name" required />
+      <input className={styles.field} name="name" placeholder="Nombre" required />
       <input
         className={styles.field}
         name="email"
@@ -72,12 +72,12 @@ export default function ContactForm() {
       <textarea
         className={styles.message}
         name="message"
-        placeholder="Message"
+        placeholder="Mensaje"
         required
       />
       {error && <p className={styles.error}>{error}</p>}
       <button className={styles.submit} type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Sending..." : "Send Message"}
+        {isSubmitting ? "Enviando..." : "Enviar"}
       </button>
     </form>
   );
