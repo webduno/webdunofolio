@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import JSConfetti from "js-confetti";
+import { GUACAMAYA_FACTS } from "@/lib/guacamayaFacts";
 import styles from "./page.module.css";
 
 const GameCanvas = dynamic(() => import("./GameCanvas"), { ssr: false });
@@ -17,6 +18,9 @@ export default function GameExperience() {
   const [flapId, setFlapId] = useState(0);
   const [sessionId, setSessionId] = useState(0);
   const [retryLocked, setRetryLocked] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [fact, setFact] = useState<string>(GUACAMAYA_FACTS[0]);
+  const lastFactRef = useRef(0);
   const confettiCanvasRef = useRef<HTMLCanvasElement>(null);
   const confettiRef = useRef<JSConfetti | null>(null);
 
@@ -68,6 +72,12 @@ export default function GameExperience() {
   }, []);
 
   const handleDead = useCallback(() => {
+    let next = Math.floor(Math.random() * GUACAMAYA_FACTS.length);
+    if (next === lastFactRef.current && GUACAMAYA_FACTS.length > 1) {
+      next = (next + 1) % GUACAMAYA_FACTS.length;
+    }
+    lastFactRef.current = next;
+    setFact(GUACAMAYA_FACTS[next]);
     setStatus("dead");
     setRetryLocked(true);
   }, []);
@@ -76,13 +86,21 @@ export default function GameExperience() {
     confettiRef.current?.addConfetti({
       confettiColors: [
         "#3ddc84",
-        "#f0c14a",
-        "#ff6b6b",
-        "#ffe066",
-        "#74c0fc",
-        "#ffffff",
+        "#3dff00",
+        // "#f0c14a",
+        // "#ff6b6b",
+        // "#ffe066",
+        // "#74c0fc",
+        // "#ffffff",
       ],
       confettiNumber: 120,
+    });
+  }, []);
+
+  const handleGold = useCallback(() => {
+    confettiRef.current?.addConfetti({
+      confettiColors: ["#ffd27a", "#f5920e", "#ffe066"],
+      confettiNumber: 1,
     });
   }, []);
 
@@ -99,6 +117,10 @@ export default function GameExperience() {
   }, [retryLocked, status]);
 
   const flap = useCallback(() => {
+    if (infoOpen) {
+      return;
+    }
+
     const current = statusRef.current;
     if (current === "dead") {
       if (retryLocked) {
@@ -117,10 +139,15 @@ export default function GameExperience() {
     }
 
     setFlapId((value) => value + 1);
-  }, [retryLocked]);
+  }, [infoOpen, retryLocked]);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
+      if (event.code === "Escape") {
+        setInfoOpen(false);
+        return;
+      }
+
       if (event.code !== "Space") {
         return;
       }
@@ -135,7 +162,7 @@ export default function GameExperience() {
 
   return (
     <div className={styles.page}>
-      <Link href="/" className={styles.back} aria-label="Back to home">
+      <Link href="/" className={styles.back} aria-label="Volver al inicio">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path
             d="M15 5L8 12L15 19"
@@ -146,6 +173,15 @@ export default function GameExperience() {
           />
         </svg>
       </Link>
+
+      <button
+        type="button"
+        className={styles.info}
+          aria-label="Cómo jugar"
+        onClick={() => setInfoOpen(true)}
+      >
+        ?
+      </button>
 
       <div
         className={styles.stage}
@@ -160,11 +196,13 @@ export default function GameExperience() {
         <div className={styles.canvasWrap}>
           <GameCanvas
             status={status}
+            paused={infoOpen}
             flapId={flapId}
             sessionId={sessionId}
             onScore={setScore}
             onDead={handleDead}
             onSpecial={handleSpecial}
+            onGold={handleGold}
           />
         </div>
 
@@ -173,40 +211,106 @@ export default function GameExperience() {
         ) : null}
 
         {status === "ready" ? (
-          <div className={styles.overlay}>
+          <div className={`${styles.overlay} ${infoOpen ? styles.overlayHidden : ""}`}>
             <div className={styles.overlayTitle} />
             <div className={styles.overlayBottom}>
               <div className={styles.overlayHint}>
-                Tap to flap. Stay off the island and grab the seeds.
+                Atrapa las <span style={{ whiteSpace: "nowrap", fontWeight: "bold", color: "", letterSpacing: "1px", textShadow: "1px 1px 3px #ff9900" }}>
+                  semillas doradas 🟡 </span>
+                   <br />  <span style={{ letterSpacing: "1px", color: "#ff3333", textShadow: "1px 1px 1px #550000" }}>
+                    y evita las rojas 🔴</span>
               </div>
-              <div className={styles.best}>Best {best}</div>
-              <div className={styles.overlayHint}>Tap or press space</div>
+              {best > 0 ? (
+                <div className={styles.best}>Récord {best}</div>
+              ) : null}
+              <div className={styles.overlayHintMute}>Clickea la pantalla <br /> para jugar</div>
             </div>
           </div>
         ) : null}
 
         {status === "dead" ? (
-          <div className={`${styles.overlay} ${styles.overlayDead}`}>
+          <div
+            className={`${styles.overlay} ${styles.overlayDead} ${
+              infoOpen ? styles.overlayHidden : ""
+            }`}
+          >
             <div className={styles.overCard}>
-              <div className={styles.overlayTitle}>Game Over</div>
-              <div className={styles.overScore}>{score}</div>
-              <div className={styles.overScoreLabel}>Seeds</div>
-              <div className={styles.best}>Best {best}</div>
+              <div className={`${styles.overlayTitle} ${styles.overPulse}`}>
+                ¡Perdiste!
+              </div>
+              <div className={`${styles.overScore} ${styles.revealOne}`}>
+                {score}
+              </div>
+              <div className={`${styles.overScoreLabel} ${styles.revealOne}`}>
+                Semillas
+              </div>
+              <div className={`${styles.best} ${styles.revealOne}`}>
+                Récord {best}
+              </div>
+              <div className={`${styles.overFact} ${styles.revealTwo}`}>
+                <div className={styles.overFactLabel}>Dato Curioso Guacamayístico</div>
+                {fact}
+              </div>
               <button
                 type="button"
-                className={styles.playAgain}
+                className={`${styles.playAgain} ${styles.revealThree}`}
                 disabled={retryLocked}
                 onClick={(event) => {
                   event.stopPropagation();
                   flap();
                 }}
               >
-                Play Again
+                Jugar de nuevo
               </button>
             </div>
           </div>
         ) : null}
       </div>
+
+      {infoOpen ? (
+        <div className={styles.infoOverlay}>
+          <div className={styles.infoCard}>
+            <div className={styles.infoTitle}>Cómo jugar</div>
+            <div className={styles.infoLead}>
+              Toca o presiona espacio para volar. Agarra semillas sin tocar la
+              isla.
+            </div>
+
+            <div className={styles.infoRow}>
+              <span className={`${styles.seedDot} ${styles.seedGold}`} />
+              <span>
+                <b>Amarilla</b> +1 semilla, la isla gira más rápido
+              </span>
+            </div>
+            <div className={styles.infoRow}>
+              <span className={`${styles.seedDot} ${styles.seedGreen}`} />
+              <span>
+                <b>Verde</b> +1 semilla, la isla gira más lento
+              </span>
+            </div>
+            <div className={styles.infoRow}>
+              <span className={`${styles.seedDot} ${styles.seedRed}`} />
+              <span>
+                <b>Roja con picos</b> evítala, muerte instantánea
+              </span>
+            </div>
+
+            <div className={styles.infoLabel}>Dos formas de morir</div>
+            <div className={styles.infoLead}>
+              Caer sobre la isla, o comerte una semilla roja.
+            </div>
+
+            <button
+              type="button"
+              className={styles.playAgain}
+              onClick={() => setInfoOpen(false)}
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      ) : null}
+
       <canvas ref={confettiCanvasRef} className={styles.confetti} />
     </div>
   );

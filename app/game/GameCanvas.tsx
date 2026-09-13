@@ -35,16 +35,22 @@ const SEED_COUNT = 4;
 const COLLECT_RADIUS = 0.5;
 const BIRD_HEIGHT = 0.52;
 const SPECIAL_SEED_CHANCE = 0.04;
+const SPIN_BASE = 0.62;
+const SPIN_GAIN = 0.018;
+const SPIN_RELIEF = 0.12;
+const SPIN_MAX = 1.5;
 
 type Status = "ready" | "playing" | "dead";
 
 type GameCanvasProps = {
   status: Status;
+  paused: boolean;
   flapId: number;
   sessionId: number;
   onScore: (score: number) => void;
   onDead: () => void;
   onSpecial: () => void;
+  onGold: () => void;
 };
 
 type SeedKind = "gold" | "special" | "hazard";
@@ -191,11 +197,13 @@ function placeSeed(
 
 function GameWorld({
   status,
+  paused,
   flapId,
   sessionId,
   onScore,
   onDead,
   onSpecial,
+  onGold,
 }: GameCanvasProps) {
   const islandRef = useRef<THREE.Group>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
@@ -204,8 +212,10 @@ function GameWorld({
     y: START_Y,
     vy: 0,
     score: 0,
+    spin: SPIN_BASE,
   });
   const statusRef = useRef(status);
+  const pausedRef = useRef(paused);
   const deadSent = useRef(false);
   const seededRef = useRef(false);
   const raycaster = useMemo(() => new THREE.Raycaster(), []);
@@ -215,6 +225,7 @@ function GameWorld({
   const { camera } = useThree();
 
   statusRef.current = status;
+  pausedRef.current = paused;
 
   const [rock, sand, water, mountain, green, lightGreen] = useLoader(
     OBJLoader,
@@ -395,6 +406,7 @@ function GameWorld({
     physics.current.y = START_Y;
     physics.current.vy = 0;
     physics.current.score = 0;
+    physics.current.spin = SPIN_BASE;
     deadSent.current = false;
     seededRef.current = false;
     onScore(0);
@@ -418,9 +430,13 @@ function GameWorld({
       return;
     }
 
+    if (pausedRef.current) {
+      return;
+    }
+
     const dead = statusRef.current === "dead" || deadSent.current;
     const playing = statusRef.current === "playing" && !dead;
-    const spin = playing ? 0.62 + physics.current.score * 0.018 : 0.22;
+    const spin = playing ? physics.current.spin : 0.22;
     if (!dead) {
       island.rotation.y -= spin * d;
     }
@@ -502,7 +518,17 @@ function GameWorld({
         physics.current.score += 1;
         onScore(physics.current.score);
         if (seed.kind === "special") {
+          physics.current.spin = Math.max(
+            SPIN_BASE,
+            physics.current.spin - SPIN_RELIEF,
+          );
           onSpecial();
+        } else if (seed.kind === "gold") {
+          physics.current.spin = Math.min(
+            SPIN_MAX,
+            physics.current.spin + SPIN_GAIN,
+          );
+          onGold();
         }
         placeSeed(seed, rot, seedField.look, 3.4 + Math.random() * 0.6);
         return;
