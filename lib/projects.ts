@@ -93,4 +93,14 @@ export const PROJECTS: Project[] = [
     source: "https://github.com/webduno",
     live: "https://removeview.vercel.app/",
   },
+  {
+    id: "ggshot",
+    title: "GGShot",
+    stack: "Next.js, R3F",
+    glow: "orange",
+    category: "games",
+    image: "/images/ggshot.png",
+    source: "https://github.com/webduno",
+    live: "https://ggshot.vercel.app/",
+  },
 ];
