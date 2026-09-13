@@ -215,10 +215,10 @@ export default function GameExperience() {
             <div className={styles.overlayTitle} />
             <div className={styles.overlayBottom}>
               <div className={styles.overlayHint}>
-                Atrapa las <span style={{ whiteSpace: "nowrap", fontWeight: "bold", color: "", letterSpacing: "1px", textShadow: "1px 1px 3px #ff9900" }}>
-                  semillas doradas 🟡 </span>
-                   <br />  <span style={{ letterSpacing: "1px", color: "#ff3333", textShadow: "1px 1px 1px #550000" }}>
-                    y evita las rojas 🔴</span>
+                <div>Atrapa las</div> <div style={{ paddingTop: "5px", whiteSpace: "nowrap", fontWeight: "bold", color: "", letterSpacing: "1px", textShadow: "1px 1px 3px #ff9900" }}>
+                  semillas doradas 🟡 </div>
+                    <div style={{ paddingTop: "5px", whiteSpace: "nowrap", display:"flex", justifyContent: "center", alignItems: "center", gap: "5px", letterSpacing: "1px", color: "#ff3333", textShadow: "1px 1px 1px #550000" }}>
+                    y evita las rojas <div style={{transform: "rotate(45deg)"}}>🟥</div> </div>
               </div>
               {best > 0 ? (
                 <div className={styles.best}>Récord {best}</div>
@@ -272,32 +272,32 @@ export default function GameExperience() {
           <div className={styles.infoCard}>
             <div className={styles.infoTitle}>Cómo jugar</div>
             <div className={styles.infoLead}>
-              Toca o presiona espacio para volar. Agarra semillas sin tocar la
+              Clickea la pantalla o presiona espacio para volar. Agarra semillas sin tocar la
               isla.
             </div>
 
             <div className={styles.infoRow}>
               <span className={`${styles.seedDot} ${styles.seedGold}`} />
               <span>
-                <b>Amarilla</b> +1 semilla, la isla gira más rápido
+                <b>Amarilla</b> +1 semilla, ++velocidad
               </span>
             </div>
             <div className={styles.infoRow}>
               <span className={`${styles.seedDot} ${styles.seedGreen}`} />
               <span>
-                <b>Verde</b> +1 semilla, la isla gira más lento
+                <b>Verde</b> +10 semillas, --velocidad
               </span>
             </div>
             <div className={styles.infoRow}>
-              <span className={`${styles.seedDot} ${styles.seedRed}`} />
+              <span className={`${styles.seedBypiramid} ${styles.seedRed}`} />
               <span>
-                <b>Roja con picos</b> evítala, muerte instantánea
+                <b>Roja</b> fin de juego
               </span>
             </div>
-
-            <div className={styles.infoLabel}>Dos formas de morir</div>
+<hr style={{width: "100%", border: "1px solid #ffffff55", margin: "20px 0 0 0"}} />
+            <div className={styles.infoLabel}>Importante</div>
             <div className={styles.infoLead}>
-              Caer sobre la isla, o comerte una semilla roja.
+              <b>Evita caer en la isla o perderás el juego.</b>
             </div>
 
             <button

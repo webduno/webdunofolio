@@ -35,6 +35,7 @@ const SEED_COUNT = 4;
 const COLLECT_RADIUS = 0.5;
 const BIRD_HEIGHT = 0.52;
 const SPECIAL_SEED_CHANCE = 0.04;
+const SPECIAL_SEED_POINTS = 10;
 const SPIN_BASE = 0.62;
 const SPIN_GAIN = 0.018;
 const SPIN_RELIEF = 0.12;
@@ -515,7 +516,8 @@ function GameWorld({
           return;
         }
 
-        physics.current.score += 1;
+        physics.current.score +=
+          seed.kind === "special" ? SPECIAL_SEED_POINTS : 1;
         onScore(physics.current.score);
         if (seed.kind === "special") {
           physics.current.spin = Math.max(

@@ -126,6 +126,7 @@
   font-size: 0.85rem;
   font-weight: 600;
   line-height: 1.4;
+  padding-bottom: 20px;
 }
 
 .infoLabel {
@@ -151,7 +152,16 @@
 .infoRow b {
   color: #fff;
 }
-
+.seedBypiramid {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  clip-path: polygon(0 50%, 50% 0, 100% 50%, 50% 100%);
+}
+.seedBypiramidRed {
+  background: #ff6b6b;
+  box-shadow: 0 0 10px #ff6b6b88;
+}
 .seedDot {
   flex: none;
   width: 14px;
