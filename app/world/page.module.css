@@ -1,0 +1,154 @@
+.page {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  background: linear-gradient(180deg, #8ec9e6 0%, #cfe6ee 55%, #e6efe2 100%);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.canvasWrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.canvasWrap :global(div),
+.canvasWrap :global(canvas) {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.back {
+  position: absolute;
+  top: 14px;
+  left: 12px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: #fff;
+  border-radius: 50%;
+  background: #00000055;
+}
+
+.back svg {
+  width: 22px;
+  height: 22px;
+}
+
+.back:hover {
+  background: #00000088;
+}
+
+.loading {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: #fff;
+  font-family: var(--font-lilita), sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.04em;
+  text-shadow: 0 2px 0 #00000066;
+}
+
+.hint {
+  position: absolute;
+  top: 22px;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  text-align: center;
+  pointer-events: none;
+  padding: 0 64px;
+  color: #fff;
+  font-family: var(--font-raleway), sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 3px #00000099;
+}
+
+.hintDesktop {
+  display: none;
+}
+
+@media (pointer: fine) {
+  .hintTouch {
+    display: none;
+  }
+
+  .hintDesktop {
+    display: inline;
+  }
+}
+
+.joystick {
+  position: absolute;
+  left: 24px;
+  bottom: 28px;
+  z-index: 5;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #00000033;
+  border: 2px solid #ffffff66;
+  touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.joystickActive {
+  background: #00000055;
+}
+
+.knob {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #ffffffcc;
+  box-shadow: 0 2px 8px #00000055;
+  pointer-events: none;
+}
+
+@media (min-width: 900px) {
+  .back {
+    top: 18px;
+    left: 18px;
+  }
+
+  .hint {
+    top: 28px;
+    font-size: 1rem;
+  }
+
+  .joystick {
+    left: 32px;
+    bottom: 32px;
+  }
+}
