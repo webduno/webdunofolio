@@ -343,10 +343,10 @@
   background: linear-gradient(145deg, #ffd27a, #f5920e, #c45a00);
   box-shadow: 0 0 18px #f5920e88;
   text-shadow:
-    -2px -2px 0 #4a2200,
-    2px -2px 0 #4a2200,
-    -2px 2px 0 #4a2200,
-    2px 2px 0 #4a2200;
+    -1px -1px 0 #4a2200,
+    1px -1px 0 #4a2200,
+    -1px 1px 0 #4a2200,
+    1px 1px 0 #4a2200;
 }
 
 .playAgain:disabled {

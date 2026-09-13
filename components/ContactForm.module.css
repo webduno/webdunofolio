@@ -57,6 +57,19 @@
   opacity: 0.9;
 }
 
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  margin: 0;
+  text-align: center;
+  color: #ffb3b3;
+  font-family: var(--font-raleway), sans-serif;
+  font-size: 0.85rem;
+}
+
 .thanks {
   text-align: center;
   color: #fff;

@@ -297,7 +297,7 @@ export default function GameExperience() {
 <hr style={{width: "100%", border: "1px solid #ffffff55", margin: "20px 0 0 0"}} />
             <div className={styles.infoLabel}>Importante</div>
             <div className={styles.infoLead}>
-              <b>Evita caer en la isla o perderás el juego.</b>
+              <b>No caigas en la isla o perderás el juego.</b>
             </div>
 
             <button
