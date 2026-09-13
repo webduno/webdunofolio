@@ -83,6 +83,9 @@
   font-size: 0.78rem;
   color: #fff;
   opacity: 0.85;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  width: fit-content;
 }
 
 .source:hover {

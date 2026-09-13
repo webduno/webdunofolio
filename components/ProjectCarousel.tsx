@@ -50,7 +50,7 @@ export default function ProjectCarousel({ projects }: ProjectCarouselProps) {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                View Project
+                Enter Project
               </a>
             </div>
           </article>
