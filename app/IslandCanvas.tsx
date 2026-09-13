@@ -38,6 +38,28 @@ const CLOUDS = [
   { position: [2.35, 5.85, 0.7] as const, width: 5.2, rotation: 1.3 },
 ] as const;
 
+const UMBRELLAS = [
+  { position: [-1.55, -0.28, -0.5] as const, height: 0.55, rotation: 0.35 },
+  { position: [2.5, -0.2, 1.5] as const, height: 0.5, rotation: -0.85 },
+] as const;
+
+const BOATS = [
+  { position: [-1.25, -0.15, -2.95] as const, length: 1.05, rotation: 2.95 },
+  { position: [3.15, -0.15, 1.55] as const, length: 0.9, rotation: -1.15 },
+] as const;
+
+const FERRY = {
+  position: [-1.9, -0.25, 3.25] as const,
+  length: 1.7,
+  rotation: -2.1,
+};
+
+const YATCH = {
+  position: [2.1, -0.1, -1.9] as const,
+  length: .75,
+  rotation: 0.55,
+};
+
 function enableShadows(object: THREE.Object3D) {
   object.traverse((child) => {
     if (!(child instanceof THREE.Mesh)) {
@@ -153,6 +175,33 @@ function floatingClone(
   return wrap;
 }
 
+function watercraftClone(
+  source: THREE.Object3D,
+  length: number,
+  position: readonly [number, number, number],
+  rotationY = 0,
+) {
+  const wrap = new THREE.Group();
+  const inner = source.clone(true);
+  wrap.add(inner);
+
+  const box = visibleBox(inner);
+  const size = new THREE.Vector3();
+  box.getSize(size);
+  inner.scale.multiplyScalar(length / Math.max(size.x, size.z, 1e-4));
+
+  const fitted = visibleBox(inner);
+  const center = new THREE.Vector3();
+  fitted.getCenter(center);
+  inner.position.x -= center.x;
+  inner.position.z -= center.z;
+  inner.position.y -= fitted.min.y;
+
+  wrap.position.set(position[0], position[1], position[2]);
+  wrap.rotation.y = rotationY;
+  return wrap;
+}
+
 function colorClone(source: THREE.Group, material: THREE.Material) {
   const clone = source.clone(true);
   clone.traverse((child) => {
@@ -172,6 +221,12 @@ function IslandDecor() {
   const cloudsRef = useRef<THREE.Group>(null);
   const palmFbx = useLoader(FBXLoader, "/models/palmtree.fbx");
   const cloudsFbx = useLoader(FBXLoader, "/models/clouds.fbx");
+  const [umbrellaFbx, boatFbx, ferryFbx, yatchFbx] = useLoader(FBXLoader, [
+    "/models/umbrella.fbx",
+    "/models/boat.fbx",
+    "/models/ferry.fbx",
+    "/models/yatch.fbx",
+  ]);
   const guacaGltf = useLoader(GLTFLoader, "/models/guacamaya-retracted.glb");
   const birdPaint = useLoader(THREE.TextureLoader, "/models/bird-paint.jpg");
 
@@ -200,6 +255,42 @@ function IslandDecor() {
       transparent: true,
       opacity: 0.5,
     });
+    const wood = new THREE.MeshLambertMaterial({
+      color: 0xece1ac,
+      flatShading: true,
+    });
+    const woodDark = new THREE.MeshLambertMaterial({
+      color: 0xc4a66a,
+      flatShading: true,
+    });
+    const metal = new THREE.MeshLambertMaterial({
+      color: 0x7f7f7f,
+      flatShading: true,
+    });
+    const hull = new THREE.MeshLambertMaterial({
+      color: 0xf2f0ea,
+      flatShading: true,
+    });
+    const glass = new THREE.MeshLambertMaterial({
+      color: 0x3a5368,
+      flatShading: true,
+      transparent: true,
+      opacity: 0.72,
+    });
+    const canopyRed = new THREE.MeshLambertMaterial({
+      color: 0xff4646,
+      flatShading: true,
+      side: THREE.DoubleSide,
+    });
+    const canopyWhite = new THREE.MeshLambertMaterial({
+      color: 0xf7f4ef,
+      flatShading: true,
+      side: THREE.DoubleSide,
+    });
+    const stick = new THREE.MeshLambertMaterial({
+      color: 0xb88858,
+      flatShading: true,
+    });
 
     const palmTemplate = palmFbx.clone(true);
     stripByName(palmTemplate, ["colonly"]);
@@ -214,6 +305,50 @@ function IslandDecor() {
     stripByName(cloudTemplate, []);
     paintAllMeshes(cloudTemplate, cloud);
     enableShadows(cloudTemplate);
+
+    const umbrellaTemplate = umbrellaFbx.clone(true);
+    stripByName(umbrellaTemplate, []);
+    paintNamedMeshes(umbrellaTemplate, {
+      red: canopyRed,
+      white: canopyWhite,
+      stick,
+    });
+    enableShadows(umbrellaTemplate);
+
+    const boatTemplate = boatFbx.clone(true);
+    stripByName(boatTemplate, ["colonly"]);
+    paintAllMeshes(boatTemplate, wood);
+    paintNamedMeshes(boatTemplate, {
+      planks: wood,
+      base: woodDark,
+      cover: wood,
+      engine: metal,
+    });
+    enableShadows(boatTemplate);
+
+    const ferryTemplate = ferryFbx.clone(true);
+    stripByName(ferryTemplate, ["colonly"]);
+    paintAllMeshes(ferryTemplate, hull);
+    paintNamedMeshes(ferryTemplate, {
+      base: hull,
+      glass,
+      mirror: glass,
+      handrail: metal,
+      backdoor: hull,
+    });
+    enableShadows(ferryTemplate);
+
+    const yatchTemplate = yatchFbx.clone(true);
+    stripByName(yatchTemplate, ["colonly"]);
+    paintAllMeshes(yatchTemplate, hull);
+    paintNamedMeshes(yatchTemplate, {
+      base: hull,
+      glass,
+      windows: glass,
+      poles: metal,
+      handrails: metal,
+    });
+    enableShadows(yatchTemplate);
 
     const birdPaintMat = new THREE.MeshLambertMaterial({
       map: birdPaint,
@@ -251,8 +386,10 @@ function IslandDecor() {
     bird.position.z -= birdCenter.z -1;
     bird.position.y -= birdBox.min.y-2
     palmTemplate.updateMatrixWorld(true);
-
-    
+    umbrellaTemplate.updateMatrixWorld(true);
+    boatTemplate.updateMatrixWorld(true);
+    ferryTemplate.updateMatrixWorld(true);
+    yatchTemplate.updateMatrixWorld(true);
     cloudTemplate.updateMatrixWorld(true);
 
     const clouds = CLOUDS.map((item) =>
@@ -282,8 +419,56 @@ function IslandDecor() {
       }
     });
 
+    UMBRELLAS.forEach((item) => {
+      grounded.push(
+        groundedClone(
+          umbrellaTemplate,
+          item.height,
+          item.position,
+          item.rotation,
+        ),
+      );
+    });
+
+    BOATS.forEach((item) => {
+      grounded.push(
+        watercraftClone(
+          boatTemplate,
+          item.length,
+          item.position,
+          item.rotation,
+        ),
+      );
+    });
+
+    grounded.push(
+      watercraftClone(
+        ferryTemplate,
+        FERRY.length,
+        FERRY.position,
+        FERRY.rotation,
+      ),
+    );
+    grounded.push(
+      watercraftClone(
+        yatchTemplate,
+        YATCH.length,
+        YATCH.position,
+        YATCH.rotation,
+      ),
+    );
+
     return { clouds, grounded };
-  }, [birdPaint, cloudsFbx, guacaGltf, palmFbx]);
+  }, [
+    birdPaint,
+    boatFbx,
+    cloudsFbx,
+    ferryFbx,
+    guacaGltf,
+    palmFbx,
+    umbrellaFbx,
+    yatchFbx,
+  ]);
 
   useFrame((_, delta) => {
     const clouds = cloudsRef.current;
