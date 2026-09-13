@@ -13,7 +13,7 @@ export const GUACAMAYA_FACTS = [
   "Tienen patas zigodáctilas: dos dedos adelante y dos atrás, perfectas para trepar.",
   "Pueden volar a más de 50 km/h y cruzar ríos y sabanas en línea recta.",
   "El rojo de sus plumas sí viene de pigmentos, a menudo ligados a la dieta.",
-  "Aprenden sonidos de su grupo. En libertad imitan llamadas, no tanto el habla humana.",
+  "Aprenden sonidos de su grupo. En libertad imitan llamadas.",
   "En Amazonas y Bolívar conviven varias especies: bandera, azul y amarilla, y verde.",
   "Un pico desgastado les crece toda la vida, como las uñas.",
   "Son de las aves más sociables del trópico: duermen, comen y viajan en familia.",

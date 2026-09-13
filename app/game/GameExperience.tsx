@@ -236,17 +236,17 @@ export default function GameExperience() {
           >
             <div className={styles.overCard}>
               <div className={`${styles.overlayTitle} ${styles.overPulse}`}>
-                ¡Perdiste!
+                Game Over!
               </div>
               <div className={`${styles.overScore} ${styles.revealOne}`}>
                 {score}
               </div>
               <div className={`${styles.overScoreLabel} ${styles.revealOne}`}>
-                Semillas
+                Semillas Capturadas
               </div>
-              <div className={`${styles.best} ${styles.revealOne}`}>
+              {/* <div className={`${styles.best} ${styles.revealOne}`}>
                 Récord {best}
-              </div>
+              </div> */}
               <div className={`${styles.overFact} ${styles.revealTwo}`}>
                 <div className={styles.overFactLabel}>Dato Curioso Guacamayístico</div>
                 {fact}
