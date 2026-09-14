@@ -33,18 +33,18 @@ export default function WorldExperience() {
     const body = document.body;
     const prevHtml = html.style.overflow;
     const prevBody = body.style.overflow;
-    const prevHtmlTap = html.style.webkitTapHighlightColor;
-    const prevBodyTap = body.style.webkitTapHighlightColor;
+    const prevHtmlTap = html.style.getPropertyValue("-webkit-tap-highlight-color");
+    const prevBodyTap = body.style.getPropertyValue("-webkit-tap-highlight-color");
     html.style.overflow = "hidden";
     body.style.overflow = "hidden";
-    html.style.webkitTapHighlightColor = "transparent";
-    body.style.webkitTapHighlightColor = "transparent";
+    html.style.setProperty("-webkit-tap-highlight-color", "transparent");
+    body.style.setProperty("-webkit-tap-highlight-color", "transparent");
 
     return () => {
       html.style.overflow = prevHtml;
       body.style.overflow = prevBody;
-      html.style.webkitTapHighlightColor = prevHtmlTap;
-      body.style.webkitTapHighlightColor = prevBodyTap;
+      html.style.setProperty("-webkit-tap-highlight-color", prevHtmlTap);
+      body.style.setProperty("-webkit-tap-highlight-color", prevBodyTap);
     };
   }, []);
 
