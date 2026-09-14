@@ -82,6 +82,8 @@ export default function WorldExperience() {
     dismissHint();
   }, [dismissHint]);
 
+  const onReady = useCallback(() => setReady(true), []);
+
   const onCollect = useCallback((kind: CollectKind) => {
     if (kind === "starfish") {
       setStars((n) => n + 1);
@@ -312,7 +314,7 @@ export default function WorldExperience() {
         <div className={styles.canvasWrap}>
           <WorldCanvas
             controls={controls}
-            onReady={() => setReady(true)}
+            onReady={onReady}
             onCollect={onCollect}
             canCollect={intro !== "start" && !infoOpen}
           />

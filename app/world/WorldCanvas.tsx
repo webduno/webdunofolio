@@ -403,6 +403,8 @@ function WorldScene({ controls, onReady, onCollect, canCollect }: WorldCanvasPro
     return { group, items, bottle: bottlePickup };
   }, [terrain]);
 
+  const onReadyRef = useRef(onReady);
+  onReadyRef.current = onReady;
   const onCollectRef = useRef(onCollect);
   onCollectRef.current = onCollect;
   const canCollectRef = useRef(canCollect);
@@ -426,8 +428,9 @@ function WorldScene({ controls, onReady, onCollect, canCollect }: WorldCanvasPro
       terrain.spawn.z - Math.cos(terrain.startYaw) * CAM_DISTANCE,
     );
     camera.lookAt(terrain.spawn);
-    onReady();
-  }, [bird, camera, controls, onReady, terrain]);
+    onReadyRef.current();
+    // spawn reset must only run when the scene itself changes, not on parent re-renders
+  }, [bird, camera, controls, terrain]);
 
   useFrame((_, delta) => {
     const d = Math.min(delta, 0.05);
