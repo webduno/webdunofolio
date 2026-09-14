@@ -9,6 +9,15 @@
   background: linear-gradient(180deg, #8ec9e6 0%, #cfe6ee 55%, #e6efe2 100%);
   user-select: none;
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.page * {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .stage {
