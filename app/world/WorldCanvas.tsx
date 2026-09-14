@@ -12,6 +12,7 @@ import type { WorldControls } from "./controls";
 const GRAVITY = 13.5;
 const JUMP = 5.1;
 const MAX_ALTITUDE = 9;
+const DIVE_DEPTH = 6;
 const FLY_SPEED = 5.5;
 const WALK_SPEED = 2.6;
 const BIRD_HEIGHT = 0.52;
@@ -402,15 +403,18 @@ function WorldScene({ controls, onReady }: WorldCanvasProps) {
     raycaster.set(rayOrigin, down);
     raycaster.far = 40;
     const hits = raycaster.intersectObjects(terrain.floors, false);
-    const solidY = hits.length > 0 ? hits[0].point.y : -Infinity;
-    // the water surface works as a floor too, the bird just floats on it
-    const floorY = Math.max(solidY, terrain.waterY);
+    const floorY = hits.length > 0 ? hits[0].point.y : -Infinity;
     if (s.pos.y <= floorY) {
       s.pos.y = floorY;
       s.vy = 0;
       s.grounded = true;
     } else {
       s.grounded = false;
+      const minY = terrain.waterY - DIVE_DEPTH;
+      if (s.pos.y < minY) {
+        s.pos.y = minY;
+        s.vy = Math.max(s.vy, 0);
+      }
     }
 
     bird.position.copy(s.pos);

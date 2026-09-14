@@ -169,6 +169,7 @@ export default function WorldExperience() {
           }
 
           event.preventDefault();
+          setHintVisible(false);
           lookPointer.current = {
             id: event.pointerId,
             x: event.clientX,
@@ -221,10 +222,42 @@ export default function WorldExperience() {
         {!ready ? <div className={styles.loading}>Cargando restinga…</div> : null}
 
         {ready && hintVisible ? (
+          <div className={styles.zones} aria-hidden="true">
+            <div className={styles.zonesJump}>
+              <div className={`${styles.zone} ${styles.zoneLeft}`}>
+                <span>
+                  jump
+                  <br />
+                  left
+                </span>
+              </div>
+              <div className={`${styles.zone} ${styles.zoneCenter}`}>
+                <span>
+                  jump
+                  <br />
+                  forward
+                </span>
+              </div>
+              <div className={`${styles.zone} ${styles.zoneRight}`}>
+                <span>
+                  jump
+                  <br />
+                  right
+                </span>
+              </div>
+            </div>
+            <div className={`${styles.zone} ${styles.zoneWalk}`}>
+              <span>
+                walk
+                <br />
+                forward
+              </span>
+            </div>
+          </div>
+        ) : null}
+
+        {ready && hintVisible ? (
           <div className={styles.hint}>
-            <span className={styles.hintTouch}>
-              Arriba vuela · Abajo camina · Arrastra para mirar
-            </span>
             <span className={styles.hintDesktop}>
               Espacio o click para volar · WASD para moverte
             </span>
