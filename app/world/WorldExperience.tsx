@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { SNAIL_GOAL, STARFISH_GOAL, type CollectKind } from "./collectibles";
 import { createControls } from "./controls";
 import styles from "./page.module.css";
 
@@ -15,11 +16,22 @@ const WALK_BAND = 0.67;
 const TAP_MOVE_TIME = 0.42;
 
 type KeyMap = Record<string, boolean>;
+type Intro = "start" | "controls" | "play";
+type BottleState = "none" | "held" | "done";
 
 export default function WorldExperience() {
   const controls = useRef(createControls());
   const [ready, setReady] = useState(false);
-  const [hintVisible, setHintVisible] = useState(true);
+  const [intro, setIntro] = useState<Intro>("start");
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [stars, setStars] = useState(0);
+  const [snails, setSnails] = useState(0);
+  const [bottle, setBottle] = useState<BottleState>("none");
+  const introRef = useRef<Intro>("start");
+  introRef.current = intro;
+  const infoOpenRef = useRef(false);
+  infoOpenRef.current = infoOpen;
+  const skipTapRef = useRef(false);
   const keys = useRef<KeyMap>({});
   const lookPointer = useRef<{
     id: number;
@@ -50,20 +62,55 @@ export default function WorldExperience() {
     };
   }, []);
 
+  const dismissHint = useCallback(() => {
+    if (introRef.current === "controls") {
+      setIntro("play");
+    }
+  }, []);
+
+  const beginPlay = useCallback(() => {
+    if (introRef.current === "start") {
+      setIntro("controls");
+    }
+  }, []);
+
   const jump = useCallback(() => {
+    if (infoOpenRef.current || introRef.current === "start") {
+      return;
+    }
     controls.current.jumpId += 1;
-    setHintVisible(false);
+    dismissHint();
+  }, [dismissHint]);
+
+  const onCollect = useCallback((kind: CollectKind) => {
+    if (kind === "starfish") {
+      setStars((n) => n + 1);
+      return;
+    }
+    if (kind === "snail") {
+      setSnails((n) => n + 1);
+      return;
+    }
+    if (kind === "bottle") {
+      setBottle("held");
+      return;
+    }
+    setBottle("done");
   }, []);
 
   const tapZone = useCallback(
     (clientX: number, clientY: number, target: HTMLDivElement) => {
+      if (infoOpenRef.current || introRef.current === "start") {
+        return;
+      }
+
       const rect = target.getBoundingClientRect();
       const nx = (clientX - rect.left) / Math.max(rect.width, 1);
       const ny = (clientY - rect.top) / Math.max(rect.height, 1);
       const tapMove = controls.current.tapMove;
       tapMove.y = 1;
       tapMove.remaining = TAP_MOVE_TIME;
-      setHintVisible(false);
+      dismissHint();
 
       if (ny >= WALK_BAND) {
         tapMove.x = 0;
@@ -79,7 +126,7 @@ export default function WorldExperience() {
         tapMove.x = 0;
       }
     },
-    [jump],
+    [dismissHint, jump],
   );
 
   const syncKeys = useCallback(() => {
@@ -89,9 +136,9 @@ export default function WorldExperience() {
     controls.current.move.x = x;
     controls.current.move.y = y;
     if (x !== 0 || y !== 0) {
-      setHintVisible(false);
+      dismissHint();
     }
-  }, []);
+  }, [dismissHint]);
 
   useEffect(() => {
     const tracked = [
@@ -106,6 +153,23 @@ export default function WorldExperience() {
     ];
 
     function onKeyDown(event: KeyboardEvent) {
+      if (event.code === "Escape") {
+        setInfoOpen(false);
+        return;
+      }
+
+      if (infoOpenRef.current) {
+        return;
+      }
+
+      if (introRef.current === "start") {
+        event.preventDefault();
+        if (!event.repeat) {
+          beginPlay();
+        }
+        return;
+      }
+
       if (event.code === "Space") {
         event.preventDefault();
         if (!event.repeat) {
@@ -145,7 +209,7 @@ export default function WorldExperience() {
       window.removeEventListener("keyup", onKeyUp);
       window.removeEventListener("blur", onBlur);
     };
-  }, [jump, syncKeys]);
+  }, [beginPlay, jump, syncKeys]);
 
   return (
     <div className={styles.page}>
@@ -161,15 +225,39 @@ export default function WorldExperience() {
         </svg>
       </Link>
 
+      <button
+        type="button"
+        className={styles.info}
+        aria-label="Cómo jugar"
+        onClick={() => setInfoOpen(true)}
+      >
+        ?
+      </button>
+
+      {ready && intro === "play" ? (
+        <div className={styles.hud} aria-label="Recogidos">
+          <span>⭐ {stars}/{STARFISH_GOAL}</span>
+          <span>🐌 {snails}/{SNAIL_GOAL}</span>
+          <span>
+            {bottle === "held" ? "🍾 → 🏠" : bottle === "done" ? "🍾 ✓" : "🍾 0/1"}
+          </span>
+        </div>
+      ) : null}
+
       <div
         className={styles.stage}
         onPointerDown={(event) => {
-          if (lookPointer.current) {
+          if (infoOpenRef.current || lookPointer.current) {
             return;
           }
 
           event.preventDefault();
-          setHintVisible(false);
+          if (introRef.current === "start") {
+            beginPlay();
+            skipTapRef.current = true;
+          } else {
+            dismissHint();
+          }
           lookPointer.current = {
             id: event.pointerId,
             x: event.clientX,
@@ -204,6 +292,12 @@ export default function WorldExperience() {
 
           lookPointer.current = null;
           if (look.dragging) {
+            skipTapRef.current = false;
+            return;
+          }
+
+          if (skipTapRef.current) {
+            skipTapRef.current = false;
             return;
           }
 
@@ -216,12 +310,33 @@ export default function WorldExperience() {
         }}
       >
         <div className={styles.canvasWrap}>
-          <WorldCanvas controls={controls} onReady={() => setReady(true)} />
+          <WorldCanvas
+            controls={controls}
+            onReady={() => setReady(true)}
+            onCollect={onCollect}
+            canCollect={intro !== "start" && !infoOpen}
+          />
         </div>
 
         {!ready ? <div className={styles.loading}>Cargando restinga…</div> : null}
 
-        {ready && hintVisible ? (
+        {ready && intro === "start" ? (
+          <div className={`${styles.overlay} ${infoOpen ? styles.overlayHidden : ""}`}>
+            <div className={styles.overlayHintMute}>
+              Clickea la pantalla
+              <br />
+              para jugar
+            </div>
+            <div className={styles.overlayBottom}>
+              <div className={styles.overlayHint}>
+                <div>Recoge ⭐ y 🐌</div>
+                <div className={styles.overlayHintGoal}>Lleva 🍾 a 🏠</div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {ready && intro === "controls" && !infoOpen ? (
           <div className={styles.zones} aria-hidden="true">
             <div className={styles.zonesJump}>
               <div className={`${styles.zone} ${styles.zoneLeft}`}>
@@ -256,7 +371,7 @@ export default function WorldExperience() {
           </div>
         ) : null}
 
-        {ready && hintVisible ? (
+        {ready && intro === "controls" && !infoOpen ? (
           <div className={styles.hint}>
             <span className={styles.hintDesktop}>
               Espacio o click para volar · WASD para moverte
@@ -264,6 +379,50 @@ export default function WorldExperience() {
           </div>
         ) : null}
       </div>
+
+      {infoOpen ? (
+        <div className={styles.infoOverlay}>
+          <div className={styles.infoCard}>
+            <div className={styles.infoTitle}>Cómo jugar</div>
+            <div className={styles.infoLead}>
+              Clickea la pantalla o presiona espacio para volar. Arrastra para mirar.
+              WASD para moverte.
+            </div>
+
+            <div className={styles.infoRow}>
+              <span>⭐</span>
+              <span>
+                <b>Estrella</b> recógela
+              </span>
+            </div>
+            <div className={styles.infoRow}>
+              <span>🐌</span>
+              <span>
+                <b>Caracol</b> recógelo
+              </span>
+            </div>
+            <div className={styles.infoRow}>
+              <span>🍾</span>
+              <span>
+                <b>Botella</b> un toque, llévala a 🏠
+              </span>
+            </div>
+            <hr className={styles.infoRule} />
+            <div className={styles.infoLabel}>Importante</div>
+            <div className={styles.infoLead}>
+              <b>La botella hay que devolverla a la cabaña del muelle.</b>
+            </div>
+
+            <button
+              type="button"
+              className={styles.infoDone}
+              onClick={() => setInfoOpen(false)}
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -70,6 +70,125 @@
   background: #00000088;
 }
 
+.info {
+  position: absolute;
+  top: 14px;
+  right: 12px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  border-radius: 50%;
+  background: #00000055;
+  font-family: var(--font-lilita), sans-serif;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.info:hover {
+  background: #00000088;
+}
+
+.infoOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: #050508bb;
+}
+
+.infoCard {
+  width: min(340px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 24px 20px 20px;
+  border-radius: 16px;
+  background: rgba(18, 18, 18, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.infoTitle {
+  align-self: center;
+  color: #fff;
+  font-family: var(--font-lilita), sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.04em;
+}
+
+.infoLead {
+  color: #ffd9a8;
+  font-family: var(--font-raleway), sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.4;
+  padding-bottom: 12px;
+}
+
+.infoLabel {
+  margin-top: 6px;
+  color: #ffffffcc;
+  font-family: var(--font-raleway), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-family: var(--font-raleway), sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.infoRow b {
+  color: #fff;
+}
+
+.infoRule {
+  width: 100%;
+  border: 1px solid #ffffff55;
+  margin: 12px 0 0;
+}
+
+.infoDone {
+  width: 100%;
+  margin-top: 10px;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 16px;
+  color: #fff;
+  font-family: var(--font-lilita), sans-serif;
+  font-size: 1.05rem;
+  cursor: pointer;
+  background: linear-gradient(145deg, #ffd27a, #f5920e, #c45a00);
+  box-shadow: 0 0 18px #f5920e88;
+  text-shadow:
+    -1px -1px 0 #4a2200,
+    1px -1px 0 #4a2200,
+    -1px 1px 0 #4a2200,
+    1px 1px 0 #4a2200;
+}
+
+.infoDone:hover {
+  opacity: 0.9;
+}
+
 .loading {
   position: absolute;
   inset: 0;
@@ -169,14 +288,126 @@
   }
 }
 
+.hud {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  pointer-events: none;
+  padding: 0 64px;
+  color: #fff;
+  font-family: var(--font-raleway), sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 3px #00000099;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 72px 16px 28px;
+  background: linear-gradient(
+    180deg,
+    #05050866 0%,
+    #05050818 30%,
+    #05050818 70%,
+    #05050888 100%
+  );
+  pointer-events: none;
+}
+
+.overlayHidden {
+  visibility: hidden;
+}
+
+.overlayBottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.overlayHint {
+  color: #442200;
+  font-family: var(--font-raleway), sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  max-width: 280px;
+  line-height: 1.4;
+  background: linear-gradient(45deg, #cab783, #aa9753);
+  clip-path: polygon(0 40%, 2% 5%, 70% 0, 98% 5%, 99% 96%, 50% 100%, 0 98%);
+  padding: 16px 26px 18px;
+}
+
+.overlayHintGoal {
+  padding-top: 6px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.overlayHintMute {
+  position: absolute;
+  top: 100px;
+  color: #ffd9a8;
+  font-family: var(--font-raleway), sans-serif;
+  font-size: 1.3rem;
+  font-weight: 900;
+  text-align: center;
+  max-width: 280px;
+  line-height: 1.4;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 3px #00000099;
+}
+
 @media (min-width: 900px) {
   .back {
     top: 18px;
     left: 18px;
   }
 
+  .info {
+    top: 18px;
+    right: 18px;
+  }
+
+  .infoCard {
+    width: 380px;
+    padding: 28px 24px 22px;
+  }
+
+  .infoRow,
+  .infoLead {
+    font-size: 0.95rem;
+  }
+
   .hint {
     top: 28px;
     font-size: 1rem;
+  }
+
+  .hud {
+    top: 22px;
+    font-size: 0.92rem;
+    gap: 16px;
+  }
+
+  .overlay {
+    padding: 80px 24px 36px;
+  }
+
+  .overlayHint {
+    font-size: 1.15rem;
+    max-width: 360px;
   }
 }

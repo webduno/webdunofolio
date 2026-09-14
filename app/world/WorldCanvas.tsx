@@ -8,6 +8,12 @@ import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js
 import * as THREE from "three";
 import type { RefObject } from "react";
 import type { WorldControls } from "./controls";
+import {
+  BOTTLE_SPOT,
+  SNAIL_SPOTS,
+  STARFISH_SPOTS,
+  type CollectKind,
+} from "./collectibles";
 
 const GRAVITY = 13.5;
 const JUMP = 5.1;
@@ -49,6 +55,8 @@ const HIDDEN_NAMES = ["boundary", "water_area"];
 type WorldCanvasProps = {
   controls: RefObject<WorldControls>;
   onReady: () => void;
+  onCollect: (kind: CollectKind) => void;
+  canCollect: boolean;
 };
 
 type BirdState = {
@@ -113,6 +121,52 @@ function meshesNamed(root: THREE.Object3D, names: string[]) {
   return found;
 }
 
+const PICK_RADIUS = 1;
+const DELIVER_RADIUS = 2.4;
+
+type Pickup = {
+  kind: "starfish" | "snail" | "bottle";
+  object: THREE.Object3D;
+  taken: boolean;
+};
+
+function makeStarfish(mat: THREE.Material) {
+  const wrap = new THREE.Group();
+  const core = new THREE.Mesh(new THREE.SphereGeometry(0.07, 6, 4), mat);
+  wrap.add(core);
+  for (let i = 0; i < 5; i++) {
+    const arm = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.28, 4), mat);
+    const a = (i / 5) * Math.PI * 2;
+    arm.position.set(Math.cos(a) * 0.14, 0.02, Math.sin(a) * 0.14);
+    arm.rotation.set(Math.PI / 2, 0, a + Math.PI / 2);
+    wrap.add(arm);
+  }
+  return wrap;
+}
+
+function makeSnail(bodyMat: THREE.Material, shellMat: THREE.Material) {
+  const wrap = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 6), bodyMat);
+  body.scale.set(1.4, 0.7, 0.9);
+  body.position.y = 0.07;
+  const shell = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 6), shellMat);
+  shell.position.set(0.04, 0.14, 0);
+  wrap.add(body, shell);
+  return wrap;
+}
+
+function makeBottle(glassMat: THREE.Material, capMat: THREE.Material) {
+  const wrap = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.26, 8), glassMat);
+  body.position.y = 0.13;
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.05, 0.1, 8), glassMat);
+  neck.position.y = 0.3;
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.04, 8), capMat);
+  cap.position.y = 0.36;
+  wrap.add(body, neck, cap);
+  return wrap;
+}
+
 function lerpAngle(from: number, to: number, t: number) {
   let diff = (to - from) % (Math.PI * 2);
   if (diff > Math.PI) {
@@ -123,7 +177,7 @@ function lerpAngle(from: number, to: number, t: number) {
   return from + diff * t;
 }
 
-function WorldScene({ controls, onReady }: WorldCanvasProps) {
+function WorldScene({ controls, onReady, onCollect, canCollect }: WorldCanvasProps) {
   const lightRef = useRef<THREE.DirectionalLight>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
   const actionRef = useRef<THREE.AnimationAction | null>(null);
@@ -162,6 +216,7 @@ function WorldScene({ controls, onReady }: WorldCanvasProps) {
       roughness: 0.2,
       metalness: 0.3,
       flatShading: true,
+      side: THREE.DoubleSide,
     });
     const sea = new THREE.MeshStandardMaterial({
       color: 0xb9d7bc,
@@ -170,6 +225,7 @@ function WorldScene({ controls, onReady }: WorldCanvasProps) {
       roughness: 0.25,
       metalness: 0.3,
       flatShading: true,
+      side: THREE.DoubleSide,
     });
 
     const paint: Record<string, THREE.Material> = {
@@ -247,7 +303,9 @@ function WorldScene({ controls, onReady }: WorldCanvasProps) {
     );
     const startYaw = Math.atan2(center.x - spawn.x, center.z - spawn.z);
 
-    return { root, floors, walls, bounds, waterY, spawn, startYaw };
+    const deliverPos = new THREE.Vector3(houseCenter.x, pierY + 0.15, houseCenter.z);
+
+    return { root, floors, walls, bounds, waterY, spawn, startYaw, deliverPos };
   }, [restingaFbx]);
 
   const bird = useMemo(() => {
@@ -302,6 +360,54 @@ function WorldScene({ controls, onReady }: WorldCanvasProps) {
     mixerRef.current = mixer;
     return wrap;
   }, [birdPaint, guacaGltf]);
+
+  const loot = useMemo(() => {
+    const starfishMat = lambert(0xf07878);
+    const snailBody = lambert(0xc4a574);
+    const snailShell = lambert(0xd4784a);
+    const glass = new THREE.MeshLambertMaterial({
+      color: 0x3a8f5c,
+      flatShading: true,
+      transparent: true,
+      opacity: 0.78,
+    });
+    const cap = lambert(0x3d2a1a);
+    const basket = lambert(0xc9a227);
+
+    const group = new THREE.Group();
+    const items: Pickup[] = [];
+
+    for (const [x, y, z] of STARFISH_SPOTS) {
+      const object = makeStarfish(starfishMat);
+      object.position.set(x, y, z);
+      group.add(object);
+      items.push({ kind: "starfish", object, taken: false });
+    }
+
+    for (const [x, y, z] of SNAIL_SPOTS) {
+      const object = makeSnail(snailBody, snailShell);
+      object.position.set(x, y, z);
+      group.add(object);
+      items.push({ kind: "snail", object, taken: false });
+    }
+
+    const bottle = makeBottle(glass, cap);
+    bottle.position.set(...BOTTLE_SPOT);
+    group.add(bottle);
+    const bottlePickup: Pickup = { kind: "bottle", object: bottle, taken: false };
+
+    const marker = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.48, 0.16, 8), basket);
+    marker.position.copy(terrain.deliverPos);
+    group.add(marker);
+
+    return { group, items, bottle: bottlePickup };
+  }, [terrain]);
+
+  const onCollectRef = useRef(onCollect);
+  onCollectRef.current = onCollect;
+  const canCollectRef = useRef(canCollect);
+  canCollectRef.current = canCollect;
+  const carryRef = useRef({ holding: false, delivered: false });
 
   useEffect(() => {
     stateRef.current = {
@@ -446,6 +552,53 @@ function WorldScene({ controls, onReady }: WorldCanvasProps) {
       light.target.position.copy(s.pos);
       light.target.updateMatrixWorld();
     }
+
+    for (const item of loot.items) {
+      if (item.taken) {
+        continue;
+      }
+      item.object.rotation.y += d * 1.3;
+      if (
+        canCollectRef.current &&
+        item.object.position.distanceTo(s.pos) < PICK_RADIUS
+      ) {
+        item.taken = true;
+        item.object.visible = false;
+        onCollectRef.current?.(item.kind);
+      }
+    }
+
+    const bottle = loot.bottle;
+    const carry = carryRef.current;
+    if (!carry.delivered && !carry.holding && !bottle.taken) {
+      bottle.object.rotation.y += d * 1.3;
+      if (
+        canCollectRef.current &&
+        bottle.object.position.distanceTo(s.pos) < PICK_RADIUS
+      ) {
+        bottle.taken = true;
+        carry.holding = true;
+        onCollectRef.current?.("bottle");
+      }
+    }
+
+    if (carry.holding) {
+      bottle.object.position.set(
+        s.pos.x + Math.sin(s.yaw) * 0.28,
+        s.pos.y + 0.34,
+        s.pos.z + Math.cos(s.yaw) * 0.28,
+      );
+      bottle.object.rotation.y = s.yaw;
+      const dx = s.pos.x - terrain.deliverPos.x;
+      const dz = s.pos.z - terrain.deliverPos.z;
+      if (Math.hypot(dx, dz) < DELIVER_RADIUS && Math.abs(s.pos.y - terrain.deliverPos.y) < 2.4) {
+        carry.holding = false;
+        carry.delivered = true;
+        bottle.object.position.copy(terrain.deliverPos);
+        bottle.object.position.y += 0.22;
+        onCollectRef.current?.("deliver");
+      }
+    }
   });
 
   return (
@@ -466,6 +619,7 @@ function WorldScene({ controls, onReady }: WorldCanvasProps) {
         shadow-camera-far={60}
       />
       <primitive object={terrain.root} />
+      <primitive object={loot.group} />
       <primitive object={bird} />
     </>
   );
