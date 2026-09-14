@@ -2,6 +2,8 @@
 export type WorldControls = {
   // -1..1, x is right, y is forward (camera-relative)
   move: { x: number; y: number };
+  // short burst from a tap: same axes as move, counted down in the sim
+  tapMove: { x: number; y: number; remaining: number };
   // pending camera rotation in radians, consumed each frame
   yawDelta: number;
   // bumps every time the player asks for a jump
@@ -9,5 +11,10 @@ export type WorldControls = {
 };
 
 export function createControls(): WorldControls {
-  return { move: { x: 0, y: 0 }, yawDelta: 0, jumpId: 0 };
+  return {
+    move: { x: 0, y: 0 },
+    tapMove: { x: 0, y: 0, remaining: 0 },
+    yawDelta: 0,
+    jumpId: 0,
+  };
 }

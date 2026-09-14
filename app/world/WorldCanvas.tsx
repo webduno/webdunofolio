@@ -339,16 +339,18 @@ function WorldScene({ controls, onReady }: WorldCanvasProps) {
     s.camYaw += c.yawDelta;
     c.yawDelta = 0;
 
-    const mag = Math.hypot(c.move.x, c.move.y);
+    const moveX = THREE.MathUtils.clamp(c.move.x + c.tapMove.x, -1, 1);
+    const moveY = THREE.MathUtils.clamp(c.move.y + c.tapMove.y, -1, 1);
+    const mag = Math.hypot(moveX, moveY);
     if (mag > 0.08) {
       const amount = Math.min(mag, 1);
       const sin = Math.sin(s.camYaw);
       const cos = Math.cos(s.camYaw);
       // camera-relative: forward is where the camera looks, right is perpendicular
       moveDir.set(
-        sin * c.move.y - cos * c.move.x,
+        sin * moveY - cos * moveX,
         0,
-        cos * c.move.y + sin * c.move.x,
+        cos * moveY + sin * moveX,
       );
       moveDir.normalize();
 
@@ -365,6 +367,15 @@ function WorldScene({ controls, onReady }: WorldCanvasProps) {
       const targetYaw = Math.atan2(moveDir.x, moveDir.z);
       s.yaw = lerpAngle(s.yaw, targetYaw, 1 - Math.exp(-10 * d));
       s.camYaw = lerpAngle(s.camYaw, s.yaw, 1 - Math.exp(-1.6 * d));
+    }
+
+    if (c.tapMove.remaining > 0) {
+      c.tapMove.remaining -= d;
+      if (c.tapMove.remaining <= 0) {
+        c.tapMove.x = 0;
+        c.tapMove.y = 0;
+        c.tapMove.remaining = 0;
+      }
     }
 
     s.vy -= GRAVITY * d;

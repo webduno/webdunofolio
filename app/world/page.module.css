@@ -107,35 +107,6 @@
   }
 }
 
-.joystick {
-  position: absolute;
-  left: 24px;
-  bottom: 28px;
-  z-index: 5;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: #00000033;
-  border: 2px solid #ffffff66;
-  touch-action: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.joystickActive {
-  background: #00000055;
-}
-
-.knob {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: #ffffffcc;
-  box-shadow: 0 2px 8px #00000055;
-  pointer-events: none;
-}
-
 @media (min-width: 900px) {
   .back {
     top: 18px;
@@ -145,10 +116,5 @@
   .hint {
     top: 28px;
     font-size: 1rem;
-  }
-
-  .joystick {
-    left: 32px;
-    bottom: 32px;
   }
 }

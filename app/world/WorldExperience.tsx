@@ -8,9 +8,10 @@ import styles from "./page.module.css";
 
 const WorldCanvas = dynamic(() => import("./WorldCanvas"), { ssr: false });
 
-const JOYSTICK_RADIUS = 44;
 const DRAG_THRESHOLD = 10;
 const LOOK_SPEED = 0.0055;
+const SIDE_ZONE = 0.24;
+const TAP_MOVE_TIME = 0.42;
 
 type KeyMap = Record<string, boolean>;
 
@@ -18,12 +19,14 @@ export default function WorldExperience() {
   const controls = useRef(createControls());
   const [ready, setReady] = useState(false);
   const [hintVisible, setHintVisible] = useState(true);
-  const [knob, setKnob] = useState({ x: 0, y: 0, active: false });
   const keys = useRef<KeyMap>({});
-  const joystickPointer = useRef<number | null>(null);
-  const lookPointer = useRef<{ id: number; x: number; y: number; dragging: boolean } | null>(
-    null,
-  );
+  const lookPointer = useRef<{
+    id: number;
+    x: number;
+    y: number;
+    startX: number;
+    dragging: boolean;
+  } | null>(null);
 
   useEffect(() => {
     const html = document.documentElement;
@@ -43,6 +46,25 @@ export default function WorldExperience() {
     controls.current.jumpId += 1;
     setHintVisible(false);
   }, []);
+
+  const tapFly = useCallback(
+    (clientX: number, target: HTMLDivElement) => {
+      jump();
+      const rect = target.getBoundingClientRect();
+      const nx = (clientX - rect.left) / Math.max(rect.width, 1);
+      const tapMove = controls.current.tapMove;
+      tapMove.y = 1;
+      tapMove.remaining = TAP_MOVE_TIME;
+      if (nx < SIDE_ZONE) {
+        tapMove.x = -1;
+      } else if (nx > 1 - SIDE_ZONE) {
+        tapMove.x = 1;
+      } else {
+        tapMove.x = 0;
+      }
+    },
+    [jump],
+  );
 
   const syncKeys = useCallback(() => {
     const k = keys.current;
@@ -109,31 +131,6 @@ export default function WorldExperience() {
     };
   }, [jump, syncKeys]);
 
-  const updateJoystick = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    let dx = event.clientX - cx;
-    let dy = event.clientY - cy;
-    const dist = Math.hypot(dx, dy);
-    if (dist > JOYSTICK_RADIUS) {
-      dx = (dx / dist) * JOYSTICK_RADIUS;
-      dy = (dy / dist) * JOYSTICK_RADIUS;
-    }
-
-    controls.current.move.x = dx / JOYSTICK_RADIUS;
-    controls.current.move.y = -dy / JOYSTICK_RADIUS;
-    setKnob({ x: dx, y: dy, active: true });
-    setHintVisible(false);
-  }, []);
-
-  const releaseJoystick = useCallback(() => {
-    joystickPointer.current = null;
-    controls.current.move.x = 0;
-    controls.current.move.y = 0;
-    setKnob({ x: 0, y: 0, active: false });
-  }, []);
-
   return (
     <div className={styles.page}>
       <Link href="/" className={styles.back} aria-label="Volver al inicio">
@@ -160,6 +157,7 @@ export default function WorldExperience() {
             id: event.pointerId,
             x: event.clientX,
             y: event.clientY,
+            startX: event.clientX,
             dragging: false,
           };
         }}
@@ -191,7 +189,7 @@ export default function WorldExperience() {
             return;
           }
 
-          jump();
+          tapFly(look.startX, event.currentTarget);
         }}
         onPointerCancel={(event) => {
           if (lookPointer.current?.id === event.pointerId) {
@@ -207,53 +205,14 @@ export default function WorldExperience() {
 
         {ready && hintVisible ? (
           <div className={styles.hint}>
-            <span className={styles.hintTouch}>Toca para volar · Arrastra para mirar</span>
+            <span className={styles.hintTouch}>
+              Toca para volar · Lados para girar · Arrastra para mirar
+            </span>
             <span className={styles.hintDesktop}>
               Espacio o click para volar · WASD para moverte
             </span>
           </div>
         ) : null}
-      </div>
-
-      <div
-        className={`${styles.joystick} ${knob.active ? styles.joystickActive : ""}`}
-        onPointerDown={(event) => {
-          event.stopPropagation();
-          event.preventDefault();
-          if (joystickPointer.current !== null) {
-            return;
-          }
-
-          joystickPointer.current = event.pointerId;
-          event.currentTarget.setPointerCapture(event.pointerId);
-          updateJoystick(event);
-        }}
-        onPointerMove={(event) => {
-          if (joystickPointer.current !== event.pointerId) {
-            return;
-          }
-
-          updateJoystick(event);
-        }}
-        onPointerUp={(event) => {
-          if (joystickPointer.current !== event.pointerId) {
-            return;
-          }
-
-          releaseJoystick();
-        }}
-        onPointerCancel={(event) => {
-          if (joystickPointer.current !== event.pointerId) {
-            return;
-          }
-
-          releaseJoystick();
-        }}
-      >
-        <div
-          className={styles.knob}
-          style={{ transform: `translate(${knob.x}px, ${knob.y}px)` }}
-        />
       </div>
     </div>
   );
