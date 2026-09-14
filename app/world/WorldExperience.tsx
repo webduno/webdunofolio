@@ -10,7 +10,8 @@ const WorldCanvas = dynamic(() => import("./WorldCanvas"), { ssr: false });
 
 const DRAG_THRESHOLD = 10;
 const LOOK_SPEED = 0.0055;
-const SIDE_ZONE = 0.24;
+const JUMP_COL = 1 / 3;
+const WALK_BAND = 0.67;
 const TAP_MOVE_TIME = 0.42;
 
 type KeyMap = Record<string, boolean>;
@@ -25,6 +26,7 @@ export default function WorldExperience() {
     x: number;
     y: number;
     startX: number;
+    startY: number;
     dragging: boolean;
   } | null>(null);
 
@@ -53,17 +55,25 @@ export default function WorldExperience() {
     setHintVisible(false);
   }, []);
 
-  const tapFly = useCallback(
-    (clientX: number, target: HTMLDivElement) => {
-      jump();
+  const tapZone = useCallback(
+    (clientX: number, clientY: number, target: HTMLDivElement) => {
       const rect = target.getBoundingClientRect();
       const nx = (clientX - rect.left) / Math.max(rect.width, 1);
+      const ny = (clientY - rect.top) / Math.max(rect.height, 1);
       const tapMove = controls.current.tapMove;
       tapMove.y = 1;
       tapMove.remaining = TAP_MOVE_TIME;
-      if (nx < SIDE_ZONE) {
+      setHintVisible(false);
+
+      if (ny >= WALK_BAND) {
+        tapMove.x = 0;
+        return;
+      }
+
+      jump();
+      if (nx < JUMP_COL) {
         tapMove.x = -1;
-      } else if (nx > 1 - SIDE_ZONE) {
+      } else if (nx > 1 - JUMP_COL) {
         tapMove.x = 1;
       } else {
         tapMove.x = 0;
@@ -164,6 +174,7 @@ export default function WorldExperience() {
             x: event.clientX,
             y: event.clientY,
             startX: event.clientX,
+            startY: event.clientY,
             dragging: false,
           };
         }}
@@ -195,7 +206,7 @@ export default function WorldExperience() {
             return;
           }
 
-          tapFly(look.startX, event.currentTarget);
+          tapZone(look.startX, look.startY, event.currentTarget);
         }}
         onPointerCancel={(event) => {
           if (lookPointer.current?.id === event.pointerId) {
@@ -212,7 +223,7 @@ export default function WorldExperience() {
         {ready && hintVisible ? (
           <div className={styles.hint}>
             <span className={styles.hintTouch}>
-              Toca para volar · Lados para girar · Arrastra para mirar
+              Arriba vuela · Abajo camina · Arrastra para mirar
             </span>
             <span className={styles.hintDesktop}>
               Espacio o click para volar · WASD para moverte
